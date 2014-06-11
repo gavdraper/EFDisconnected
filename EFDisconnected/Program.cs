@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using AutoMapper;
 using EFDisconnectedSample.Data;
+using EFDisconnectedSample.Dto;
 using EFDisconnectedSample.Model;
 
 namespace EFDisconnectedSample
@@ -33,17 +35,18 @@ namespace EFDisconnectedSample
             return cinema;
         }
 
-        public static Cinema LoadDisconnectAndModifyCinema()
+        public static CinemaDto LoadDisconnectAndModifyCinema()
         {
             var repo = new GlobalRepository();
             var cinema = repo.GetCinema();
-            cinema.Name = "Cinemagic";
-            cinema.ModifiedProperties.Add("Name");
-            cinema.Locations[0].Showings[0].Film.Name = "Jurassic Park";
-            cinema.Locations[0].Showings[0].Film.ModifiedProperties.Add("Name");
-            cinema.Locations.Add(new Location("Crawley") { State = State.Added });
-            cinema.Locations.Add(new Location("Worthing") { State = State.Added });
-            return cinema;
+            var cinemaDto = Mapper.Map<CinemaDto>(cinema);
+            cinemaDto.Name = "Cinemagic";
+            cinemaDto.ModifiedProperties.Add("Name");
+            cinemaDto.Locations[0].Showings[0].Film.Name = "Jurassic Park";
+            cinemaDto.Locations[0].Showings[0].Film.ModifiedProperties.Add("Name");
+            cinemaDto.Locations.Add(new LocationDto() {Name="Crawley", State = State.Added });
+            cinemaDto.Locations.Add(new LocationDto() {Name="Worthing", State = State.Added });
+            return cinemaDto;
         }
 
         static void Save(Cinema cinema, Action<Cinema> action, CinemaContext ctx)
@@ -62,8 +65,21 @@ namespace EFDisconnectedSample
             }
         }
 
+        static void setupMappings()
+        {
+            Mapper.CreateMap<Cinema, CinemaDto>();
+            Mapper.CreateMap<CinemaDto, Cinema>();
+            Mapper.CreateMap<Location, LocationDto>();
+            Mapper.CreateMap<LocationDto, Location>();
+            Mapper.CreateMap<Showing, ShowingDto>();
+            Mapper.CreateMap<ShowingDto, Showing>();
+            Mapper.CreateMap<Film, FilmDto>();
+            Mapper.CreateMap<FilmDto, Film>();  
+        }
+
         static void Main(string[] args)
         {
+            setupMappings();
             while (true)
             {
                 Console.Clear();
@@ -77,11 +93,11 @@ namespace EFDisconnectedSample
                 if (input == "1")
                     using (var ctx = new CinemaContext()) { Save(BuildDisconnectedCinema(), ctx.AddDisconnectedEntity, ctx); }
                 else if (input == "2")
-                    using (var ctx = new CinemaContext()) { Save(LoadDisconnectAndModifyCinema(), ctx.AddDisconnectedEntity, ctx); }
+                    using (var ctx = new CinemaContext()) { Save(Mapper.Map<Cinema>(LoadDisconnectAndModifyCinema()), ctx.AddDisconnectedEntity, ctx); }
                 if (input == "3")
                     using (var ctx = new CinemaContext()) { Save(BuildDisconnectedCinema(), ctx.AttachDisconnectedEntity, ctx); }
                 else if (input == "4")
-                    using (var ctx = new CinemaContext()) { Save(LoadDisconnectAndModifyCinema(), ctx.AttachDisconnectedEntity, ctx); }
+                    using (var ctx = new CinemaContext()) { Save(Mapper.Map<Cinema>(LoadDisconnectAndModifyCinema()), ctx.AttachDisconnectedEntity, ctx); }
                 else if (input == "q")
                     break;
             }
