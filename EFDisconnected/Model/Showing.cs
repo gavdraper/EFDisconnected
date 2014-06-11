@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EFDisconnectedSample.Model
 {
@@ -12,7 +13,9 @@ namespace EFDisconnectedSample.Model
         public virtual Location Location { get; set; }
         public int LocationId { get; set; }
 
+        [NotMapped]
         public List<string> ModifiedProperties { get; set; }
+        [NotMapped]
         public State State { get; set; }
     }
 }

@@ -40,12 +40,19 @@ namespace EFDisconnectedSample
             var repo = new GlobalRepository();
             var cinema = repo.GetCinema();
             var cinemaDto = Mapper.Map<CinemaDto>(cinema);
-            cinemaDto.Name = "Cinemagic";
+            cinemaDto.Name = "Cinemagic Two";
             cinemaDto.ModifiedProperties.Add("Name");
             cinemaDto.Locations[0].Showings[0].Film.Name = "Jurassic Park";
             cinemaDto.Locations[0].Showings[0].Film.ModifiedProperties.Add("Name");
             cinemaDto.Locations.Add(new LocationDto() {Name="Crawley", State = State.Added });
             cinemaDto.Locations.Add(new LocationDto() {Name="Worthing", State = State.Added });
+            cinemaDto.Locations[0].Showings.Add(new ShowingDto()
+            {
+                State=State.Added,
+                Start   = DateTime.Now, 
+                Film= cinemaDto.Locations[0].Showings[0].Film,
+                FilmId= cinemaDto.Locations[0].Showings[0].FilmId,
+            });
             return cinemaDto;
         }
 

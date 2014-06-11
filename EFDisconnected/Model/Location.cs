@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Security;
 
 namespace EFDisconnectedSample.Model
@@ -18,7 +19,9 @@ namespace EFDisconnectedSample.Model
             Name = name;
         }
 
+        [NotMapped]
         public List<string> ModifiedProperties { get; set; }
+        [NotMapped]
         public State State { get; set; }
     }
 }
